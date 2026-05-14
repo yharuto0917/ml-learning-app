@@ -14,7 +14,8 @@
 /coverage
 
 # next.js
-/.next/
+apps/web/.next/
+/dist/
 /out/
 
 # production
@@ -40,13 +41,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+apps/web/cloudflare-env.d.ts
 
 # OpenNext
-/.open-next
+apps/web/.open-next/
 
 # wrangler files
-.wrangler
+apps/web/.wrangler/
 .dev.vars*
-
 
 !.dev.vars.example
