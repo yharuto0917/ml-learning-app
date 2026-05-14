@@ -1,0 +1,32 @@
+@import "tailwindcss";
+@import "katex/dist/katex.min.css";
+
+@theme {
+  --color-background: var(--color-zinc-50);
+  --color-foreground: var(--color-zinc-800);
+  --color-heading: var(--color-zinc-950);
+  --color-border: var(--color-zinc-200);
+  --color-primary: var(--color-zinc-900);
+  --color-primary-hover: var(--color-zinc-600);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground bg-none;
+    /* Subtle noise texture for a premium feel */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+  }
+  
+  .prose h1 { @apply text-3xl font-bold mt-12 mb-6 text-heading tracking-tight; }
+  .prose h2 { @apply text-xl font-semibold mt-10 mb-4 border-b border-border pb-2 text-heading tracking-tight; }
+  .prose h3 { @apply text-lg font-semibold mt-8 mb-3 text-heading tracking-tight; }
+  .prose p { @apply my-6 leading-relaxed text-zinc-600 font-light text-[15px]; }
+  .prose ul { @apply list-disc list-outside my-6 ml-4 space-y-2 text-zinc-600 font-light text-[15px]; }
+  .prose ol { @apply list-decimal list-outside my-6 ml-4 space-y-2 text-zinc-600 font-light text-[15px]; }
+  
+  /* Elegant dark code blocks */
+  .prose pre { @apply p-6 rounded-2xl bg-zinc-900 text-zinc-100 overflow-x-auto my-8 shadow-sm font-mono text-[13px] leading-relaxed; }
+  .prose code { @apply font-mono text-[13px]; }
+  .prose p > code, .prose li > code { @apply bg-zinc-100 text-zinc-800 px-1.5 py-0.5 rounded-lg text-[0.85em] border border-zinc-200; }
+  .prose a { @apply text-primary hover:text-primary-hover font-medium underline underline-offset-4 decoration-zinc-300 hover:decoration-zinc-600 transition-colors; }
+}
