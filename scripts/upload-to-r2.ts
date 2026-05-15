@@ -51,7 +51,10 @@ async function triggerRevalidate(tags: string[]) {
     console.error(`[revalidate] failed: ${res.status} ${text}`);
     process.exit(1);
   }
-  const json = (await res.json()) as { revalidated?: string[]; count?: number };
+  const json = (await res.json().catch(() => ({}))) as {
+    revalidated?: string[];
+    count?: number;
+  };
   console.log(
     `[revalidate] ok: ${json.count ?? tags.length} tag(s) invalidated`
   );
@@ -94,8 +97,8 @@ async function main() {
     console.log(`Uploading: ${key} ${isLocal ? '(local)' : ''}`);
     try {
       await execa('pnpm', cmdArgs, { cwd, stdio: 'inherit' });
-    } catch {
-      console.error(`Failed to upload ${key}`);
+    } catch (e) {
+      console.error(`Failed to upload ${key}:`, e);
       process.exit(1);
     }
 

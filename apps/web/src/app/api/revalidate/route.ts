@@ -7,6 +7,19 @@ interface RevalidateBody {
   tags?: unknown;
 }
 
+// 文字列の constant-time 比較。length 自体は早 return するが、secret の長さは
+// 公知化しても問題ないため許容(中身のバイト比較は等時間)。
+// `node:crypto` の `timingSafeEqual` は edge runtime + Workers の bundler 相性が
+// 不安定なので、Web Crypto に依存しない手書き実装を採用。
+function timingSafeEqualStr(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i++) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return mismatch === 0;
+}
+
 export async function POST(request: Request) {
   const { env } = await getCloudflareContext({ async: true });
   const secret = (env as unknown as Record<string, unknown>)
@@ -21,7 +34,7 @@ export async function POST(request: Request) {
 
   const authHeader = request.headers.get('authorization') ?? '';
   const provided = authHeader.replace(/^Bearer\s+/i, '').trim();
-  if (provided !== secret) {
+  if (!timingSafeEqualStr(provided, secret)) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
