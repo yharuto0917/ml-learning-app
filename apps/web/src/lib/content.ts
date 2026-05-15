@@ -2,12 +2,18 @@ import { getR2Text, getR2Json } from './r2';
 import { notFound } from 'next/navigation';
 import { unstable_cache } from 'next/cache';
 
+export interface LessonNotebooks {
+  lesson?: string;
+  practice?: string;
+  solution?: string;
+}
+
 export interface LessonMeta {
   title: string;
   chapter: number;
   lesson: number;
-  prerequisites?: number[];
-  notebooks?: Record<string, string>;
+  prerequisites?: Array<number | string>;
+  notebooks?: LessonNotebooks;
   estimatedMinutes?: number;
   tags?: string[];
 }
