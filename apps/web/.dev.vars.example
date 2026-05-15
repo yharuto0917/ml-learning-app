@@ -1,0 +1,9 @@
+# Copy to apps/web/.dev.vars and fill in actual values for local development.
+# `wrangler dev` (and `next dev` via the OpenNext adapter) loads this file.
+# Do NOT commit the resulting .dev.vars file (.gitignore covers it).
+
+NEXTJS_ENV=development
+
+# Secret used by /api/revalidate to authorize on-demand ISR invalidations
+# (set on production with `wrangler secret put REVALIDATE_SECRET`).
+REVALIDATE_SECRET=dev-secret-change-me
