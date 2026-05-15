@@ -37,7 +37,7 @@ export default async function LessonPage({ params }: PageProps) {
     <article className="prose max-w-none">
       <LessonHeader meta={meta!} />
       <div dangerouslySetInnerHTML={{ __html: html }} />
-      <LessonFooter />
+      <LessonFooter notebooks={meta?.notebooks} />
     </article>
   );
 }
