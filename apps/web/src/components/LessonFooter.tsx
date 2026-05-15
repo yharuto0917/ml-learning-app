@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { LessonNotebooks } from '@/lib/content';
 import { ColabButton } from './ColabButton';
 
@@ -17,7 +18,7 @@ export function LessonFooter({
       {hasPractice && (
         <div className="mb-10">
           <div className="text-[11px] font-semibold text-zinc-500 mb-4 tracking-widest uppercase">
-            Practice
+            練習
           </div>
           <div className="flex flex-wrap items-center gap-3">
             {practicePath && (
@@ -34,11 +35,11 @@ export function LessonFooter({
         <div className="w-12 h-px bg-zinc-300 hidden sm:block"></div>
         <div className="flex-grow sm:flex-grow-0 sm:mx-8">
           {next ? (
-            <a
+            <Link
               href={next}
               className="group flex items-center justify-center gap-3 w-full sm:w-auto border border-zinc-300 text-zinc-900 px-8 py-3.5 rounded-full text-sm font-medium hover:bg-zinc-50 transition-colors shadow-sm"
             >
-              Continue to Next Lesson
+              次のレッスンへ
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -55,10 +56,10 @@ export function LessonFooter({
                 <path d="M5 12h14" />
                 <path d="m12 5 7 7-7 7" />
               </svg>
-            </a>
+            </Link>
           ) : (
-            <span className="text-zinc-400 text-xs tracking-widest uppercase">
-              End of Chapter
+            <span className="text-zinc-400 text-xs tracking-widest">
+              この章はここまでです
             </span>
           )}
         </div>
