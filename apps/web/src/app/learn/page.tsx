@@ -39,7 +39,10 @@ function ChapterCard({ chapter }: { chapter: ChapterEntry }) {
   const isEmpty = chapter.lessons.length === 0;
 
   return (
-    <section className="border border-zinc-200 rounded-3xl p-7 bg-white shadow-sm flex flex-col">
+    <section
+      id={`chapter-${chapter.id}`}
+      className="scroll-mt-24 border border-zinc-200 rounded-3xl p-7 bg-white shadow-sm flex flex-col"
+    >
       <div className="flex items-baseline gap-3 mb-3">
         <span className="text-[11px] font-semibold text-zinc-400 tracking-widest uppercase">
           Ch {chapter.id}
