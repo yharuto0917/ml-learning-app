@@ -6,23 +6,31 @@ import remarkRehype from 'remark-rehype';
 import rehypeKatex from 'rehype-katex';
 import rehypeShiki from '@shikijs/rehype';
 import rehypeStringify from 'rehype-stringify';
-import { visit } from 'unist-util-visit';
 
-function remarkMdxToIsland() {
-  return (tree: any) => {
-    visit(tree, ['mdxJsxFlowElement', 'mdxJsxTextElement'], (node: any) => {
-      const componentName = node.name;
-      if (componentName) {
-        node.type = 'html';
-        const props = node.attributes.reduce((acc: any, attr: any) => {
-          if (attr.type === 'mdxJsxAttribute') {
-            acc[attr.name] = attr.value;
-          }
-          return acc;
-        }, {});
-        node.value = `<div data-island="${componentName}" data-props='${JSON.stringify(props)}'></div>`;
-      }
-    });
+function attributesToProps(attributes: any[] = []): Record<string, unknown> {
+  return attributes.reduce<Record<string, unknown>>((acc, attr) => {
+    if (attr.type === 'mdxJsxAttribute') {
+      acc[attr.name] = attr.value;
+    }
+    return acc;
+  }, {});
+}
+
+function mdxJsxToHastElement(tagName: 'div' | 'span') {
+  return (state: any, node: any) => {
+    const componentName = node.name;
+    if (!componentName) {
+      return state.all(node);
+    }
+    return {
+      type: 'element',
+      tagName,
+      properties: {
+        'data-island': componentName,
+        'data-props': JSON.stringify(attributesToProps(node.attributes)),
+      },
+      children: state.all(node),
+    };
   };
 }
 
@@ -30,9 +38,14 @@ export async function processMdx(content: string) {
   const processor = unified()
     .use(remarkParse)
     .use(remarkMdx)
-    .use(remarkMdxToIsland)
     .use(remarkMath)
-    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(remarkRehype, {
+      allowDangerousHtml: true,
+      handlers: {
+        mdxJsxFlowElement: mdxJsxToHastElement('div'),
+        mdxJsxTextElement: mdxJsxToHastElement('span'),
+      },
+    })
     .use(rehypeKatex)
     .use(rehypeShiki, {
       themes: {
