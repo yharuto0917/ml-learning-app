@@ -10,6 +10,8 @@ const COMPONENT_MAP: Record<string, React.ComponentType<any>> = {
   ColabCTA,
 };
 
+const CHILDREN_ATTR = 'data-island-children';
+
 export function IslandRoot() {
   useEffect(() => {
     const islands = Array.from(
@@ -36,14 +38,21 @@ export function IslandRoot() {
         }
       }
 
-      const innerHtml = el.innerHTML.trim();
-      el.innerHTML = '';
+      // Initial children を退避し、Fast Refresh / Strict Mode の double-mount でも復元可能にする
+      let innerHtml = el.getAttribute(CHILDREN_ATTR);
+      if (innerHtml === null) {
+        innerHtml = el.innerHTML.trim();
+        el.setAttribute(CHILDREN_ATTR, innerHtml);
+      }
 
       const root = createRoot(el);
       root.render(
         innerHtml ? (
           <Component {...props}>
-            <div dangerouslySetInnerHTML={{ __html: innerHtml }} />
+            <div
+              style={{ display: 'contents' }}
+              dangerouslySetInnerHTML={{ __html: innerHtml }}
+            />
           </Component>
         ) : (
           <Component {...props} />

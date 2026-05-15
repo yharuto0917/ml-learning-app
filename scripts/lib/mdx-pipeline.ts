@@ -6,31 +6,64 @@ import remarkRehype from 'remark-rehype';
 import rehypeKatex from 'rehype-katex';
 import rehypeShiki from '@shikijs/rehype';
 import rehypeStringify from 'rehype-stringify';
+import type { Element } from 'hast';
+import type { Handler, State } from 'mdast-util-to-hast';
+import type {
+  MdxJsxAttribute,
+  MdxJsxExpressionAttribute,
+  MdxJsxFlowElement,
+  MdxJsxTextElement,
+} from 'mdast-util-mdx-jsx';
 
-function attributesToProps(attributes: any[] = []): Record<string, unknown> {
-  return attributes.reduce<Record<string, unknown>>((acc, attr) => {
+const BLOCK_ONLY_COMPONENTS = new Set(['Callout', 'ColabCTA']);
+
+function attributesToProps(
+  componentName: string,
+  attributes: Array<MdxJsxAttribute | MdxJsxExpressionAttribute> = []
+): Record<string, unknown> {
+  const props: Record<string, unknown> = {};
+  for (const attr of attributes) {
     if (attr.type === 'mdxJsxAttribute') {
-      acc[attr.name] = attr.value;
+      props[attr.name] = attr.value;
+    } else {
+      console.warn(
+        `[mdx-pipeline] <${componentName}>: expression attribute (\`${attr.value ?? ''}\`) is not supported and will be skipped`
+      );
     }
-    return acc;
-  }, {});
+  }
+  return props;
 }
 
-function mdxJsxToHastElement(tagName: 'div' | 'span') {
-  return (state: any, node: any) => {
+function mdxJsxToHastElement(defaultTagName: 'div' | 'span'): Handler {
+  return (state: State, node: MdxJsxFlowElement | MdxJsxTextElement) => {
     const componentName = node.name;
     if (!componentName) {
       return state.all(node);
     }
-    return {
+
+    let tagName: 'div' | 'span' = defaultTagName;
+    if (
+      defaultTagName === 'span' &&
+      BLOCK_ONLY_COMPONENTS.has(componentName)
+    ) {
+      console.warn(
+        `[mdx-pipeline] <${componentName}> is block-only but appears inline; emitting as <div>. Wrap with blank lines around the tag to make it a proper block.`
+      );
+      tagName = 'div';
+    }
+
+    const element: Element = {
       type: 'element',
       tagName,
       properties: {
         'data-island': componentName,
-        'data-props': JSON.stringify(attributesToProps(node.attributes)),
+        'data-props': JSON.stringify(
+          attributesToProps(componentName, node.attributes)
+        ),
       },
-      children: state.all(node),
+      children: state.all(node) as Element['children'],
     };
+    return element;
   };
 }
 

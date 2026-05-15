@@ -18,6 +18,12 @@ importers:
       '@shikijs/rehype':
         specifier: ^2.0.0
         version: 2.5.0
+      '@types/hast':
+        specifier: ^3.0.4
+        version: 3.0.4
+      '@types/mdast':
+        specifier: ^4.0.4
+        version: 4.0.4
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.41
@@ -30,6 +36,12 @@ importers:
       gray-matter:
         specifier: ^4.0.3
         version: 4.0.3
+      mdast-util-mdx-jsx:
+        specifier: ^3.2.0
+        version: 3.2.0
+      mdast-util-to-hast:
+        specifier: ^13.2.1
+        version: 13.2.1
       rehype-katex:
         specifier: ^7.0.1
         version: 7.0.1
