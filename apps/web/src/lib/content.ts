@@ -18,6 +18,42 @@ export interface LessonMeta {
   tags?: string[];
 }
 
+export interface LessonEntry {
+  category: string;
+  slug: string;
+  title: string;
+  chapter: number;
+  lesson: number;
+  estimatedMinutes?: number;
+  tags?: string[];
+  notebooks?: LessonNotebooks;
+}
+
+export interface ChapterEntry {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  lessons: LessonEntry[];
+}
+
+export interface LearnIndex {
+  chapters: ChapterEntry[];
+}
+
+export async function fetchIndex(): Promise<LearnIndex | null> {
+  const getCachedIndex = unstable_cache(
+    async () => getR2Json<LearnIndex>('content/_index.json'),
+    ['learn-index'],
+    {
+      revalidate: 3600,
+      tags: ['learn-index'],
+    }
+  );
+
+  return getCachedIndex();
+}
+
 export async function fetchLesson(category: string, slug: string) {
   const getCachedLesson = unstable_cache(
     async () => {

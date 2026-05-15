@@ -1,0 +1,68 @@
+[
+  {
+    "id": 1,
+    "slug": "numpy",
+    "title": "numpy",
+    "description": "機械学習の計算基盤である多次元配列操作を、ループに頼らずベクトル化で書けるようにする。"
+  },
+  {
+    "id": 2,
+    "slug": "pandas",
+    "title": "pandas",
+    "description": "実データ(欠損・型混在・時系列)を扱える前処理力を獲得する。"
+  },
+  {
+    "id": 3,
+    "slug": "scikit-learn",
+    "title": "scikit-learn",
+    "description": "古典的MLの全工程(前処理→学習→評価→チューニング)をPipelineで組めるようになる。"
+  },
+  {
+    "id": 4,
+    "slug": "deep-learning-basics",
+    "title": "ディープラーニングの基礎",
+    "description": "PyTorchを使い、順伝播から訓練ループまでを自分で書けるようになる。"
+  },
+  {
+    "id": 5,
+    "slug": "learning-techniques",
+    "title": "基本的な学習手法",
+    "description": "「動くモデル」から「ちゃんと汎化するモデル」へ。実務で必須のテクニックを揃える。"
+  },
+  {
+    "id": 6,
+    "slug": "cnn",
+    "title": "CNN",
+    "description": "画像分類タスクを通じて、畳み込みの直感と代表的アーキテクチャを理解する。"
+  },
+  {
+    "id": 7,
+    "slug": "rnn",
+    "title": "RNN",
+    "description": "系列データの基本構造から、現代的な配列処理の入り口(Attention)までを繋ぐ。"
+  },
+  {
+    "id": 8,
+    "slug": "vae",
+    "title": "VAE",
+    "description": "確率的生成モデルの基礎概念であるELBOと再パラメータ化を理解し、自分で実装できる。"
+  },
+  {
+    "id": 9,
+    "slug": "gan",
+    "title": "GAN",
+    "description": "敵対的学習の不安定性を理解した上で、安定化テクニックを使い分けられる。"
+  },
+  {
+    "id": 10,
+    "slug": "reinforcement-learning",
+    "title": "強化学習",
+    "description": "MDPの定式化から DQN・Policy Gradient までを、Gymnasium環境で実装しながら理解する。"
+  },
+  {
+    "id": 11,
+    "slug": "transfer-learning",
+    "title": "転移学習",
+    "description": "ゼロから訓練しない選択肢を持ち、少データでも実用精度を出せる。"
+  }
+]
