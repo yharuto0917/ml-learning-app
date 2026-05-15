@@ -6,23 +6,64 @@ import remarkRehype from 'remark-rehype';
 import rehypeKatex from 'rehype-katex';
 import rehypeShiki from '@shikijs/rehype';
 import rehypeStringify from 'rehype-stringify';
-import { visit } from 'unist-util-visit';
+import type { Element } from 'hast';
+import type { Handler, State } from 'mdast-util-to-hast';
+import type {
+  MdxJsxAttribute,
+  MdxJsxExpressionAttribute,
+  MdxJsxFlowElement,
+  MdxJsxTextElement,
+} from 'mdast-util-mdx-jsx';
 
-function remarkMdxToIsland() {
-  return (tree: any) => {
-    visit(tree, ['mdxJsxFlowElement', 'mdxJsxTextElement'], (node: any) => {
-      const componentName = node.name;
-      if (componentName) {
-        node.type = 'html';
-        const props = node.attributes.reduce((acc: any, attr: any) => {
-          if (attr.type === 'mdxJsxAttribute') {
-            acc[attr.name] = attr.value;
-          }
-          return acc;
-        }, {});
-        node.value = `<div data-island="${componentName}" data-props='${JSON.stringify(props)}'></div>`;
-      }
-    });
+const BLOCK_ONLY_COMPONENTS = new Set(['Callout', 'ColabCTA']);
+
+function attributesToProps(
+  componentName: string,
+  attributes: Array<MdxJsxAttribute | MdxJsxExpressionAttribute> = []
+): Record<string, unknown> {
+  const props: Record<string, unknown> = {};
+  for (const attr of attributes) {
+    if (attr.type === 'mdxJsxAttribute') {
+      props[attr.name] = attr.value;
+    } else {
+      console.warn(
+        `[mdx-pipeline] <${componentName}>: expression attribute (\`${attr.value ?? ''}\`) is not supported and will be skipped`
+      );
+    }
+  }
+  return props;
+}
+
+function mdxJsxToHastElement(defaultTagName: 'div' | 'span'): Handler {
+  return (state: State, node: MdxJsxFlowElement | MdxJsxTextElement) => {
+    const componentName = node.name;
+    if (!componentName) {
+      return state.all(node);
+    }
+
+    let tagName: 'div' | 'span' = defaultTagName;
+    if (
+      defaultTagName === 'span' &&
+      BLOCK_ONLY_COMPONENTS.has(componentName)
+    ) {
+      console.warn(
+        `[mdx-pipeline] <${componentName}> is block-only but appears inline; emitting as <div>. Wrap with blank lines around the tag to make it a proper block.`
+      );
+      tagName = 'div';
+    }
+
+    const element: Element = {
+      type: 'element',
+      tagName,
+      properties: {
+        'data-island': componentName,
+        'data-props': JSON.stringify(
+          attributesToProps(componentName, node.attributes)
+        ),
+      },
+      children: state.all(node) as Element['children'],
+    };
+    return element;
   };
 }
 
@@ -30,9 +71,14 @@ export async function processMdx(content: string) {
   const processor = unified()
     .use(remarkParse)
     .use(remarkMdx)
-    .use(remarkMdxToIsland)
     .use(remarkMath)
-    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(remarkRehype, {
+      allowDangerousHtml: true,
+      handlers: {
+        mdxJsxFlowElement: mdxJsxToHastElement('div'),
+        mdxJsxTextElement: mdxJsxToHastElement('span'),
+      },
+    })
     .use(rehypeKatex)
     .use(rehypeShiki, {
       themes: {

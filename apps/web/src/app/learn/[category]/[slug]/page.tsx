@@ -1,6 +1,7 @@
 import { fetchLesson } from '@/lib/content';
 import { LessonHeader } from '@/components/LessonHeader';
 import { LessonFooter } from '@/components/LessonFooter';
+import { IslandRoot } from '@/components/IslandRoot';
 import { notFound } from 'next/navigation';
 
 export const dynamicParams = true;
@@ -37,6 +38,7 @@ export default async function LessonPage({ params }: PageProps) {
     <article className="prose max-w-none">
       <LessonHeader meta={meta!} />
       <div dangerouslySetInnerHTML={{ __html: html }} />
+      <IslandRoot key={`${category}/${slug}`} />
       <LessonFooter notebooks={meta?.notebooks} />
     </article>
   );
